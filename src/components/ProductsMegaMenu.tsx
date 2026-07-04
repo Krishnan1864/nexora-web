@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
@@ -34,7 +34,7 @@ function ProductExplorer({ closeMenu }: { closeMenu?: () => void }) {
         <p className="px-3 pt-2 pb-3 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
           Our Products
         </p>
-        <div className="grid grid-cols-2 gap-1 md:grid-cols-1">
+        <div className="grid grid-cols-1 gap-1 sm:grid-cols-2 md:grid-cols-1">
           {products.map((product) => {
             const Icon = productIcons[product.slug] ?? Boxes;
             const selectedProduct = selected.slug === product.slug;
@@ -44,7 +44,7 @@ function ProductExplorer({ closeMenu }: { closeMenu?: () => void }) {
                 type="button"
                 onClick={() => setSelectedSlug(product.slug)}
                 onMouseEnter={() => setSelectedSlug(product.slug)}
-                className={`group flex min-w-0 items-center gap-3 rounded-xl px-3 py-3 text-left transition-all ${
+                className={`group flex min-w-0 items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-all md:py-3 ${
                   selectedProduct
                     ? "bg-white text-[#0F172A] shadow-[0_3px_12px_rgba(15,23,42,.08)] ring-1 ring-slate-200"
                     : "text-slate-500 hover:bg-white/70 hover:text-[#0F172A]"
@@ -56,7 +56,7 @@ function ProductExplorer({ closeMenu }: { closeMenu?: () => void }) {
                   <Icon className="size-[18px]" />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[12px] font-bold">{product.name}</span>
+                  <span className="block text-[12px] font-bold leading-5 md:truncate">{product.name}</span>
                   <span className="hidden truncate text-[10px] text-slate-400 md:block">
                     {product.category}
                   </span>
@@ -77,7 +77,7 @@ function ProductExplorer({ closeMenu }: { closeMenu?: () => void }) {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -8 }}
           transition={{ duration: 0.18 }}
-          className="flex min-h-[400px] flex-col p-6 md:p-8"
+          className="flex min-h-[360px] flex-col p-4 sm:p-6 md:min-h-[400px] md:p-8"
         >
           <div className="flex items-start gap-4">
             <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-[#FFF3C4] text-[#B77A00]">
@@ -178,6 +178,9 @@ export function ProductsMegaMenu({ active }: { active: boolean }) {
 
 export function MobileProductsMenu() {
   const [open, setOpen] = useState(false);
+  const { pathname } = useLocation();
+  const activeProductSlug =
+    products.find((product) => pathname === `/products/${product.slug}`)?.slug ?? products[0].slug;
   return (
     <div>
       <button
@@ -196,8 +199,51 @@ export function MobileProductsMenu() {
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className="px-2 pb-3">
-              <ProductExplorer closeMenu={() => setOpen(false)} />
+            <div className="px-4 pb-3">
+              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-3">
+                <p className="px-2 pb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                  Our Products
+                </p>
+                <div className="grid gap-1">
+                  {products.map((product) => {
+                    const Icon = productIcons[product.slug] ?? Boxes;
+                    const selectedProduct = activeProductSlug === product.slug;
+                    return (
+                      <Link
+                        key={product.slug}
+                        to={`/products/${product.slug}`}
+                        onClick={() => setOpen(false)}
+                        className={`group flex items-center gap-3 rounded-2xl px-3 py-3 text-slate-500 transition-all ${
+                          selectedProduct
+                            ? "bg-white text-[#0F172A] shadow-[0_3px_12px_rgba(15,23,42,.08)] ring-1 ring-slate-200"
+                            : "hover:bg-white hover:text-[#0F172A] hover:shadow-[0_3px_12px_rgba(15,23,42,.08)] hover:ring-1 hover:ring-slate-200"
+                        }`}
+                      >
+                        <span
+                          className={`grid size-10 shrink-0 place-items-center rounded-full shadow-sm ${
+                            selectedProduct
+                              ? "bg-[#FFF3C4] text-[#B77A00]"
+                              : "bg-white text-slate-400 group-hover:bg-[#FFF3C4] group-hover:text-[#B77A00]"
+                          }`}
+                        >
+                          <Icon className="size-[18px]" />
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-[13px] font-bold leading-5">
+                            {product.name}
+                          </span>
+                          <span className="block text-[10px] font-semibold leading-4 text-slate-400">
+                            {product.category}
+                          </span>
+                        </span>
+                        <ChevronRight
+                          className={`size-4 shrink-0 transition-colors ${selectedProduct ? "text-[#B77A00]" : "text-slate-400 group-hover:text-[#B77A00]"}`}
+                        />
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </motion.div>
         )}

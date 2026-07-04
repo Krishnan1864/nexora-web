@@ -83,7 +83,7 @@ export function Navbar() {
       </div>
 
       {open && (
-        <div className="lg:hidden container-x mt-2 rounded-3xl bg-white shadow-soft border border-border overflow-hidden">
+        <div className="container-x mt-2 max-h-[calc(100dvh-7.5rem)] overflow-y-auto overscroll-contain rounded-3xl border border-border bg-white shadow-soft lg:hidden">
           <div className="flex flex-col p-3">
             {nav.map((item) =>
               item.to === "/products" ? (
